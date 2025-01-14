@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	sourcetext "gitgub.com/aswait/go-lexical-analyzer/pkg/source-text"
+	sourcetext "gitgub.com/aswait/go-syntactic-analyzer/pkg/source-text"
 )
 
 type LexicalAnalyzerer interface {

@@ -1,6 +1,6 @@
 package main
 
-import "gitgub.com/aswait/go-lexical-analyzer/run"
+import "gitgub.com/aswait/go-syntactic-analyzer/run"
 
 func main() {
 	app := run.NewApp()

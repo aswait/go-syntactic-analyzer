@@ -1,4 +1,4 @@
-package screenform
+package ui
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	lexicalanalyzer "gitgub.com/aswait/go-lexical-analyzer/pkg/lexical-analyzer"
+	lexicalanalyzer "gitgub.com/aswait/go-syntactic-analyzer/pkg/lexical-analyzer"
 )
 
 type ScreenFormer interface {
