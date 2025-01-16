@@ -3,7 +3,8 @@ package run
 import (
 	lexicalanalyzer "gitgub.com/aswait/go-syntactic-analyzer/pkg/lexical-analyzer"
 	sourcetext "gitgub.com/aswait/go-syntactic-analyzer/pkg/source-text"
-	screenform "gitgub.com/aswait/go-syntactic-analyzer/ui"
+	syntacticanalyzer "gitgub.com/aswait/go-syntactic-analyzer/pkg/syntactic-analyzer"
+	"gitgub.com/aswait/go-syntactic-analyzer/ui"
 )
 
 type App struct {
@@ -18,6 +19,8 @@ func (a *App) Run() {
 
 	lexicalanalyzer := lexicalanalyzer.NewLexicalAnalyzer(sourcetext)
 
-	screenform := screenform.NewScreenForm(lexicalanalyzer)
+	syntaxAnalyzer := syntacticanalyzer.NewSyntacticAnalyzer()
+
+	screenform := ui.NewScreenForm(lexicalanalyzer, *syntaxAnalyzer)
 	screenform.Run()
 }

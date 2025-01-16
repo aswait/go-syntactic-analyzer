@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -10,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	lexicalanalyzer "gitgub.com/aswait/go-syntactic-analyzer/pkg/lexical-analyzer"
+	syntacticanalyzer "gitgub.com/aswait/go-syntactic-analyzer/pkg/syntactic-analyzer"
 )
 
 type ScreenFormer interface {
@@ -23,9 +23,10 @@ type ScreenForm struct {
 	OutputField     *widget.Label
 	StartButton     *widget.Button
 	LexicalAnalyzer lexicalanalyzer.LexicalAnalyzerer
+	SyntaxAnalyzer  syntacticanalyzer.SyntacticAnalyzer
 }
 
-func NewScreenForm(lexicalanalyzer lexicalanalyzer.LexicalAnalyzerer) *ScreenForm {
+func NewScreenForm(lexicalAnalyzer lexicalanalyzer.LexicalAnalyzerer, syntaxAnalyzer syntacticanalyzer.SyntacticAnalyzer) *ScreenForm {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Лексический анализатор")
 
@@ -42,7 +43,8 @@ func NewScreenForm(lexicalanalyzer lexicalanalyzer.LexicalAnalyzerer) *ScreenFor
 		Window:          myWindow,
 		InputField:      inputField,
 		OutputField:     outputField,
-		LexicalAnalyzer: lexicalanalyzer,
+		LexicalAnalyzer: lexicalAnalyzer,
+		SyntaxAnalyzer:  syntaxAnalyzer,
 	}
 
 	sf.StartButton = widget.NewButton("Запуск", func() {
@@ -59,7 +61,15 @@ func NewScreenForm(lexicalanalyzer lexicalanalyzer.LexicalAnalyzerer) *ScreenFor
 			return
 		}
 
-		result, err := sf.LexicalAnalyzer.Analyze()
+		tokens, err := sf.LexicalAnalyzer.Analyze()
+		if err != nil {
+			sf.OutputField.SetText(fmt.Sprintf("Ошибка: %v", err))
+			return
+		}
+
+		fmt.Println(tokens)
+
+		err = sf.SyntaxAnalyzer.Parse(tokens)
 		if err != nil {
 			sf.OutputField.SetText(fmt.Sprintf("Ошибка: %v", err))
 			return
@@ -67,7 +77,7 @@ func NewScreenForm(lexicalanalyzer lexicalanalyzer.LexicalAnalyzerer) *ScreenFor
 
 		finalMessage := sf.LexicalAnalyzer.Validate()
 
-		sf.OutputField.SetText(strings.Join(result, "\n") + "\n" + finalMessage)
+		sf.OutputField.SetText("\n" + finalMessage)
 	})
 
 	content := container.NewVBox(

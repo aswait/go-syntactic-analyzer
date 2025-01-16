@@ -12,7 +12,7 @@ type LexicalAnalyzerer interface {
 	Transliterate() (string, error)
 	Validate() string
 	SourceLoadFromInput(input string)
-	Analyze() ([]string, error)
+	Analyze() ([]Token, error)
 }
 
 type LexicalAnalyzer struct {
@@ -21,6 +21,11 @@ type LexicalAnalyzer struct {
 	transliterated  []rune
 	currentPosition int
 	reservedWords   map[string]string
+}
+
+type Token struct {
+	Value string
+	Type  string
 }
 
 func NewLexicalAnalyzer(source sourcetext.SourceTexter) *LexicalAnalyzer {
@@ -108,8 +113,8 @@ func (la *LexicalAnalyzer) SourceLoadFromInput(input string) {
 	la.currentPosition = 0
 }
 
-func (la *LexicalAnalyzer) Analyze() ([]string, error) {
-	var tokens []string
+func (la *LexicalAnalyzer) Analyze() ([]Token, error) {
+	var tokens []Token
 	commentMode := false
 	for la.currentPosition < len(la.transliterated) {
 		symbol := la.transliterated[la.currentPosition]
@@ -140,11 +145,11 @@ func (la *LexicalAnalyzer) Analyze() ([]string, error) {
 		}
 
 		if matched, _ := regexp.MatchString(`^(010)*100(000)*$`, word); matched {
-			tokens = append(tokens, fmt.Sprintf("(Number %s)", word))
+			tokens = append(tokens, Token{Value: word, Type: "Number"})
 		} else if matched, _ := regexp.MatchString(`^cd[a-d]*$`, word); matched {
-			tokens = append(tokens, fmt.Sprintf("(Identifier %s)", word))
-		} else if _, exists := la.reservedWords[word]; exists {
-			tokens = append(tokens, fmt.Sprintf("(Reserved word %s)", word))
+			tokens = append(tokens, Token{Value: word, Type: "Identifier"})
+		} else if t, exists := la.reservedWords[word]; exists {
+			tokens = append(tokens, Token{Value: word, Type: t})
 		} else {
 			return nil, fmt.Errorf("Несоответствие слова: %s", word)
 		}
